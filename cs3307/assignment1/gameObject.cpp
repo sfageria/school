@@ -1,5 +1,7 @@
+
 #include "gameObject.h"
 
+//constructor 
 Game::Game(std::string ihomeTeam, std::string iawayTeam, int ihomeScore, int iawayScore)
 {
     homeScore = ihomeScore;
