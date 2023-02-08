@@ -1,3 +1,9 @@
+/* -------------------
+SHUBH FAGERIA
+FEBRUARY 7, 2023
+CS3307
+Assignment 1
+--------------------*/
 
 #include <cstddef>
 #include <iostream>
@@ -22,10 +28,10 @@ struct MemoryStruct
 
 struct team* teams;
 
+//callback function for curl request
 static size_t
 WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
-    //((string*)userp)->append((char*)contents, 0, size*nmemb);
     size_t realsize = size * nmemb;
 
 
@@ -34,7 +40,6 @@ WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
     char* ptr = (char*)realloc(mem->memory, mem->size + realsize + 1);
     if (!ptr)
     {
-        /* out of memory! */
         printf("not enough memory (realloc returned NULL)\n");
         return 0;
     }
@@ -47,35 +52,31 @@ WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp)
     return realsize;
 }
 
+//initialize game objects and push into vector
 vector<Game> createVector(nlohmann::json & myjson) {
     vector<Game> vGame;
 
     auto& dates = myjson["dates"];
-    //cout << dates.items() << endl;
-    //cout << myjson["dates"][21] << endl;
 
+//for every date...
     for (int i = 0; i < dates.items(); i++)
     {
         auto z = dates[i];
         if (z.is_null()) {
-            //cout << "HERE";
             break;
         }
-        //std::cout << myjson["dates"][0]["games"][0]["teams"]["away"]["score"]<< std::endl;
             auto item = dates[i]["games"];
             int games = sizeof(item);
-            //cout << item.items() << endl;
+	    
+	    //for every game...
             for (int x = 0; x < games; x++)
             {
                 try {
 
+			//skip to next if game type is not R
                     if (myjson["dates"][i]["games"][x]["gameType"] != "R") {
-                     //   cout << myjson["dates"][i]["games"][x]["gameType"] << endl;
 			    continue;
-
-
                     }
-                    //cout << myjson["dates"][i]["games"][x]["gameType"] << endl;
                     
                     int awayScore = myjson["dates"][i]["games"][x]["teams"]["away"]["score"];
                     int homeScore = myjson["dates"][i]["games"][x]["teams"]["home"]["score"];
@@ -83,45 +84,25 @@ vector<Game> createVector(nlohmann::json & myjson) {
                     string awayTeam = myjson["dates"][i]["games"][x]["teams"]["away"]["team"]["name"];
                     string homeTeam = myjson["dates"][i]["games"][x]["teams"]["home"]["team"]["name"];
 
+			//create Game objects and add to vector
                     Game tempGame(homeTeam, awayTeam, homeScore, awayScore);
                     vGame.push_back(tempGame);
 
-                    if (awayScore == 0 && homeScore == 0) {
-                //        cout << "I IS: ";
-                //        cout << i;
-                //        cout << "    X IS: ";
-                //        cout << x << endl;
-                    }
-                
-                     //cout << "I IS: ";
-                     //cout << i;
-                     //cout << "    X IS: ";
-                     //cout << x << endl;
-                     //cout << "AWAYSCORE  ";
-                     //cout << awayScore << endl;
 
                 } catch (...) {
                     x = games;
-                    // cout << "catch  I IS: \n";
-                    // cout << i;
-                    // cout << "   X IS: ";
-                    // cout << x << endl;
+
                 }
-                //cout << myjson["dates"][i] << endl;
-                //cout << tempGame.getHomeTeam() << endl;
-                //cout << " vs. " << endl;
-                //cout << tempGame.getAwayTeam() << endl;
-                
+
             }
 
-            //auto &teams = game["teams"];
-            // cout << games << endl;
     }
     
     return vGame;
     
 }
 
+//make curl request
 void initRequest()
 {
     CURL* curl_handle;
@@ -162,19 +143,14 @@ void initRequest()
     }
     else
     {
-        /*
-     * Now, our chunk.memory points to a memory block that is chunk.size
-     * bytes big and contains the remote file.
-     *
-     * Do something nice with it!
-     */
-        //cout << "Variable response : " << response;
-        //printf("%s", chunk.memory);
+	    //parse returned json
         nlohmann::json myjson = nlohmann::json::parse(chunk.memory);
+	    
+	    //create vector of games
         vector<Game> vGame = createVector(myjson);
         int size = vGame.size();
 
-
+	    //std output 
         for (int i = 0; i < size; i++) {
             Game tempGame = vGame[i];
             cout << tempGame.getHomeTeam();
@@ -185,13 +161,7 @@ void initRequest()
             cout << " - ";
             cout << tempGame.getAwayScore() << endl;
         }
-        //auto &teamName = myjson["dates"]["games"]["teams"]["away"]["team"]["name"];
-        //std::cout << myjson["dates"][0]["games"][0]["teams"]["away"]["score"]<< std::endl;
-        
-        //auto &games = myjson["test-data"];
-        //teams = new struct team [1];
-        // printf(teamName);
-        //printf("%lu bytes retrieved\n", (unsigned long)chunk.size);
+
     }
 
     /* cleanup curl stuff */
