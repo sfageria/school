@@ -1,4 +1,11 @@
 
+/* -------------------
+SHUBH FAGERIA
+FEBRUARY 7, 2023
+CS3307
+Assignment 1
+--------------------*/
+
 #include "gameObject.h"
 
 //constructor 
@@ -10,10 +17,13 @@ Game::Game(std::string ihomeTeam, std::string iawayTeam, int ihomeScore, int iaw
     awayTeam = iawayTeam;
 }
 
+//deconstructor
 Game::~Game()
 {
 }
 
+
+//getters and setters
 int Game::getHomeScore()
 {
     return homeScore;
