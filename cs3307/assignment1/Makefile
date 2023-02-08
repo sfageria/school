@@ -1,3 +1,3 @@
 helloWorld:
-	g++ -o fageriaBuild main.cpp gameObject.cpp request.cpp --std=c++11 -lcurl
-	./fageriaBuild
+	g++ -o Build main.cpp gameObject.cpp request.cpp --std=c++11 -lcurl
+	./Build
